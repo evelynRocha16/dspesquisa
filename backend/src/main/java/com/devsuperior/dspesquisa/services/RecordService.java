@@ -1,11 +1,16 @@
 package com.devsuperior.dspesquisa.services;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.devsuperior.dspesquisa.dto.GameDTO;
 import com.devsuperior.dspesquisa.dto.RecordDTO;
 import com.devsuperior.dspesquisa.dto.RecordInsertDTO;
 import com.devsuperior.dspesquisa.entities.Game;
@@ -37,6 +42,18 @@ public class RecordService {
 		entity = recordRepository.save(entity);
 		
 		return new RecordDTO(entity);
+	}
+	
+	@Transactional(readOnly = true)
+	public List<RecordDTO> findAll() {
+		List<Record> list = recordRepository.findAll();
+		return list.stream().map(x -> new RecordDTO(x)).collect(Collectors.toList());
+	}
+
+	@Transactional
+	public Page<RecordDTO> findByMoments(Instant minDate, Instant maxDate, PageRequest pageRequest) {
+		// TODO Auto-generated method stub
+		return recordRepository.findByMoments(minDate, maxDate, pageRequest).map(x -> new RecordDTO(x));
 	}
 	
 }
